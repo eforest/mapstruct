@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.Map;
+
 /**
  * reference used by BuiltInMethod/HelperMethod to create an additional field in the mapper.
  */
@@ -22,4 +24,10 @@ public interface FieldReference {
      */
     Type getType();
 
+    /**
+     * @return additional template parameters
+     */
+    default Map<String, Object> getTemplateParameter() {
+        return null;
+    }
 }

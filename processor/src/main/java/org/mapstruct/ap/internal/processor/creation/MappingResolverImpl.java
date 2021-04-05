@@ -47,6 +47,7 @@ import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
+import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -98,6 +99,11 @@ public class MappingResolverImpl implements MappingResolver {
      */
     private final Set<SupportingMappingMethod> usedSupportedMappings = new HashSet<>();
 
+    /**
+     * Private fields which are added to map certain property types.
+     */
+    private final Set<Field> usedSupportedFields = new HashSet<>();
+
     public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
                                List<MapperReference> mapperReferences, boolean verboseLogging) {
@@ -142,6 +148,11 @@ public class MappingResolverImpl implements MappingResolver {
     @Override
     public Set<SupportingMappingMethod> getUsedSupportedMappings() {
         return usedSupportedMappings;
+    }
+
+    @Override
+    public Set<Field> getUsedSupportedFields() {
+        return usedSupportedFields;
     }
 
     private MapperReference findMapperReference(Method method) {
@@ -426,6 +437,12 @@ public class MappingResolverImpl implements MappingResolver {
             // add helper methods required in conversion
             Set<Field> allUsedFields = new HashSet<>( mapperReferences );
             SupportingField.addAllFieldsIn( supportingMethodCandidates, allUsedFields );
+
+            for (FieldReference helperField : conversionProvider.getRequiredHelperFields( ctx )) {
+                Field field = SupportingField.getSafeField( null, helperField, allUsedFields );
+                allUsedFields.add( field );
+                usedSupportedFields.add( field );
+            }
 
             for ( HelperMethod helperMethod : conversionProvider.getRequiredHelperMethods( ctx ) ) {
                 SupportingMappingMethod supportingMappingMethod =

@@ -89,4 +89,17 @@ public class SupportingConstructorFragment extends ModelElement {
             }
         }
     }
+
+    public static SupportingConstructorFragment getSafeConstructorFragment(SupportingMappingMethod method,
+                                                                           ConstructorFragment fragment,
+                                                                           Field supportingField) {
+        if ( fragment == null ) {
+            return null;
+        }
+
+        return new SupportingConstructorFragment(
+            method,
+            fragment,
+            supportingField != null ? supportingField.getVariableName() : null );
+    }
 }
